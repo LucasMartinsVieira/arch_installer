@@ -6,4 +6,12 @@ BLUE='\033[1;36m'  # Blue
 RED='\033[0;31m'   # Red
 NC='\033[0m'       # No Color
 
+DIRECTORY_UEFI="/sys/firmware/efi/efivars/"
 
+if [ -d $DIRECTORY_UEFI ]; then
+  echo -e "${GREEN}This Computer Supports UEFI${NC}"
+  exit 1
+else
+  echo -e "${RED}This Computer Doesn't Support UEFI${NC}"
+  exit 0
+fi
