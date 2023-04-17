@@ -6,12 +6,24 @@ BLUE='\033[1;36m'  # Blue
 RED='\033[0;31m'   # Red
 NC='\033[0m'       # No Color
 
-DIRECTORY_UEFI="/sys/firmware/efi/efivars/"
+SEPARATOR="echo"""
+clear
 
+# Checking if the computer supports uefi
+DIRECTORY_UEFI="/sys/firmware/efi/efivars/"
 if [ -d $DIRECTORY_UEFI ]; then
   echo -e "${GREEN}This Computer Supports UEFI${NC}"
-  exit 1
+  $SEPARATOR
 else
   echo -e "${RED}This Computer Doesn't Support UEFI${NC}"
   exit 0
 fi
+
+# Keyboard and time
+echo -e "${BLUE}Setting up Time and Keyboard Layout${NC}"
+timedatectl set-ntp true
+echo -e "${BLUE}Type your Keyboard Layout${NC}"
+read kb_layout
+loadkeys $kb_layout
+clear
+
