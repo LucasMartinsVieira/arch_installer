@@ -16,7 +16,7 @@ locale-gen
 echo 'LANG=pt_BR.UTF-8' >> /etc/locale.conf
 echo -e "${BLUE}[+] Enter your Keyboard Layout: ${NC}"
 read kb_layout
-echo $kb_layout >> /etc/vconsole.conf
+echo "KEYMAP=$kb_layout" >> /etc/vconsole.conf
 echo "$kb_layout is set in /etc/vconsole.conf"
 sleep 1
 echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
@@ -63,6 +63,8 @@ echo -e "${BLUE}Enabling Services${NC}"
 systemctl enable NetworkManager
 systemctl enable bluetooth
 systemctl enable libvirtd
+
+doas localectl set-x11-keymap br
 
 # Reboot
 echo -e "${GREEN}Press 'Control + d' and Reboot${NC}"
