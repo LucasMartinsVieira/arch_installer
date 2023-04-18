@@ -19,4 +19,4 @@ doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
 doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
 doas sed -i "s/#CleanAfter/CleanAfter/" /etc/paru.conf
 
-nvim /etc/doas.conf
+doas nvim /etc/paru.conf

@@ -64,7 +64,5 @@ systemctl enable NetworkManager
 systemctl enable bluetooth
 systemctl enable libvirtd
 
-doas localectl set-x11-keymap br
-
 # Reboot
 echo -e "${GREEN}Press 'Control + d' and Reboot${NC}"
