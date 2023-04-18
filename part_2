@@ -53,5 +53,10 @@ echo -e "${BLUE}Setting Up Grub With UEFI${NC}"
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 
+# Enbling Services
+echo -e "${BLUE}Enabling Services${NC}"
+systemctl enable NetworkManager
+systemctl enable bluetooth
+
 # Reboot
 echo -e "${GREEN}Press 'Control + d' and Reboot${NC}"
