@@ -66,6 +66,7 @@ mount --mkdir $uefipart /mnt/boot/efi
 clear
 lsblk -p
 sleep 3
+clear
 
 # Pacstrap - fstab - arch-chroot
 echo -e "${BLUE}Installing Packages with Pacstrap${NC}"

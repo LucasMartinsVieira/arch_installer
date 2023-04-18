@@ -8,6 +8,8 @@ NC='\033[0m'       # No Color
 echo -e "${BLUE}Installing Paru AUR Helper${NC}"
 git clone https://aur.archlinux.org/paru-bin.git
 cd paru-bin
-makepkg -si
+doas makepkg -si
 cd ..
 rm paru-bin -rf
+
+# Paru.conf
