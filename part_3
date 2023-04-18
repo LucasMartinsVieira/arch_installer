@@ -8,8 +8,15 @@ NC='\033[0m'       # No Color
 echo -e "${BLUE}Installing Paru AUR Helper${NC}"
 git clone https://aur.archlinux.org/paru-bin.git
 cd paru-bin
-doas makepkg -si
+makepkg -si
 cd ..
 rm paru-bin -rf
 
 # Paru.conf
+sed -i "s/#bin/bin/" /etc/paru.conf
+sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /etc/paru.conf
+sed -i "s|#FileManager = vifm|FileManager = lf|" /etc/paru.conf
+
+sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
+sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
+sed -i "s/#CleanAfter/CleanAfter/" /etc/paru.conf
