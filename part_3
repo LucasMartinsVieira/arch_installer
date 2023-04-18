@@ -13,10 +13,10 @@ cd ..
 rm paru-bin -rf
 
 # Paru.conf
-doas sed -i "/\[bin\]/"'s/^#//' /etc/pacman.conf
 doas sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /etc/paru.conf
 doas sed -i "s|#FileManager = vifm|FileManager = lf|" /etc/paru.conf
-
 doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
 doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
 doas sed -i "s/#CleanAfter/CleanAfter/" /etc/paru.conf
+
+nvim /etc/doas.conf
