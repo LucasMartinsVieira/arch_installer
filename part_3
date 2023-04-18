@@ -1,0 +1,13 @@
+#!/bin/sh
+
+GREEN='\033[0;32m' # Green
+BLUE='\033[1;36m'  # Blue
+RED='\033[0;31m'   # Red
+NC='\033[0m'       # No Color
+
+echo -e "${BLUE}Installing Paru AUR Helper${NC}"
+git clone https://aur.archlinux.org/paru-bin.git
+cd paru-bin
+makepkg -si
+cd ..
+rm paru-bin -rf
