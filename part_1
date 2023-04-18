@@ -9,6 +9,11 @@ NC='\033[0m'       # No Color
 SEPARATOR="echo"""
 clear
 
+# Intro
+echo -e "${BLUE}Arch Installer${NC}"
+sleep 1
+$SEPARATOR
+
 # Checking if the computer supports uefi
 DIRECTORY_UEFI="/sys/firmware/efi/efivars/"
 if [ -d $DIRECTORY_UEFI ]; then
@@ -16,14 +21,22 @@ if [ -d $DIRECTORY_UEFI ]; then
   $SEPARATOR
 else
   echo -e "${RED}This Computer Doesn't Support UEFI${NC}"
+  echo -e "${RED}This Script Only Works With UEFI Systems${NC}"
   exit 0
 fi
 
 # Keyboard and time
-echo -e "${BLUE}Setting up Time and Keyboard Layout${NC}"
+echo -e "${BLUE}[+] Type your Keyboard Layout: ${NC}"
 timedatectl set-ntp true
-echo -e "${BLUE}Type your Keyboard Layout${NC}"
 read kb_layout
 loadkeys $kb_layout
+echo "$kb_layout is set for your Keyboard Layout"
+sleep 1
 clear
 
+# Partioning the Drive
+echo -e "${BLUE}Partioning the Drive${NC}"
+lsblk
+printf "${BLUE}[+]→ Enter The Drive : ${NC}"
+read drive
+fdisk $drive
