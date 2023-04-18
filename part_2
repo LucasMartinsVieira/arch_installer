@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Colors :
+GREEN='\033[0;32m' # Green
+BLUE='\033[1;36m'  # Blue
+RED='\033[0;31m'   # Red
+NC='\033[0m'       # No Color
+
+# Locale, hwclock, hostname
+echo -e "${BLUE}Seting Up the Locale${NC}"
+ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+hwclock --systohc
+echo 'pt_BR.UTF-8 UTF-8' >> /etc/locale.gen
+locale-gen
+echo 'LANG=pt_BR.UTF-8' >> /etc/locale.conf
+echo -e "${BLUE}[+] Enter your Keyboard Layout: ${NC}"
+read kb_layout
+echo $kb_layout >> /etc/vconsole.conf
+echo "$kb_layout is set in /etc/vconsole.conf"
+sleep 1
+echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
+read host
+echo $host >> /etc/hostname
+echo "$host as the hostname of the computer"
+sleep 1
+clear
