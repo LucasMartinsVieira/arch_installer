@@ -45,20 +45,29 @@ clear
 # Formating the Drive
 echo -e "${BLUE}Formating Partitions${NC}"
 lsblk -p
-
 echo -e "${BLUE}[+] Enter UEFI Partition: ${NC}"
 read uefipart
 mkfs.fat -F32 $uefipart
-
 read -p "[+] Did you also create Swap partition? [y/n] : " answer
 if [[ $answer == y ]]; then
   echo -e "${BLUE}[+] Enter the Swap partition: ${NC}"
   read swappart
   mkswap $swappart
+  sleep 1
   swapon $swappart
 fi
-
 echo -e "${BLUE}[+] Enter The Linux Partition: ${NC}"
 read linuxpart
 mkfs.ext4 $linuxpart
 
+# Mounting
+mount $linuxpart /mnt
+mount --mkdir $uefipart /mnt/boot/efi
+clear
+lsblk -p
+
+# Pacstrap - fstab - arch-chroot
+echo -e "${BLUE}Installing Packages with Pacstrap${NC}"
+pacstrap -K /mnt base linux linux-firmware linux-headers neovim git
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
