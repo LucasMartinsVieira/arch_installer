@@ -73,4 +73,9 @@ echo -e "${BLUE}Installing Packages with Pacstrap${NC}"
 $SEPARATOR
 pacstrap -K /mnt base linux linux-firmware linux-headers neovim git
 genfstab -U /mnt >> /mnt/etc/fstab
+
+# Message
+echo -e "${BLUE}Clone the repo again and run part_2${NC}"
+
+# arch-chroot
 arch-chroot /mnt
