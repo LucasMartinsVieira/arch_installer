@@ -65,7 +65,8 @@ systemctl enable bluetooth
 systemctl enable libvirtd
 
 # Message
-echo -e "${BLUE}Clone the repo again and run part_3${NC}"
+echo -e "${BLUE}Clone the repo again and run part_3 (after reboot)${NC}"
+$SEPARATOR
 
 # Reboot
 echo -e "${GREEN}Press 'Control + d' and Reboot${NC}"

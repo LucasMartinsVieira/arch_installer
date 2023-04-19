@@ -76,6 +76,6 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 # Message
 echo -e "${BLUE}Clone the repo again and run part_2${NC}"
-
+$SEPARATOR
 # arch-chroot
 arch-chroot /mnt
