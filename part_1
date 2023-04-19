@@ -70,6 +70,7 @@ clear
 
 # Pacstrap - fstab - arch-chroot
 echo -e "${BLUE}Installing Packages with Pacstrap${NC}"
+$SEPARATOR
 pacstrap -K /mnt base linux linux-firmware linux-headers neovim git
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
