@@ -13,13 +13,12 @@ cd ..
 rm paru-bin -rf
 
 # Paru.conf
+doas sed -i 's/\#\[bin\]/\[bin\]/' /etc/paru.conf
 doas sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /etc/paru.conf
 doas sed -i "s|#FileManager = vifm|FileManager = lf|" /etc/paru.conf
-doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
+doas sed -i 's/\#BottomUp/BottomUp/' /etc/paru.conf
 doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
 doas sed -i "s/#CleanAfter/CleanAfter/" /etc/paru.conf
-
-doas nvim /etc/paru.conf
 
 # Set X11 keyboard
 doas localectl set-x11-keymap br
