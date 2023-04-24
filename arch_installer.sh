@@ -9,7 +9,10 @@ NC='\033[0m'       # No Color
 SEPARATOR="echo"""
 
 if [ "$1" = 1 ]; then
-### Part I ###
+####################
+###### Part I ######
+####################
+
 clear
 
 # Intro
@@ -51,7 +54,7 @@ lsblk -p
 echo -e "${BLUE}[+] Enter UEFI Partition: ${NC}"
 read uefipart
 mkfs.fat -F32 $uefipart
-read -p "[+] Did you also create Swap partition? [y/n] : " answer
+read -p "[+] Did you also create Swap partition? [y/n]: " answer
 if [[ $answer == y ]]; then
   echo -e "${BLUE}[+] Enter the Swap partition: ${NC}"
   read swappart
@@ -84,7 +87,9 @@ $SEPARATOR
 arch-chroot /mnt
 
 elif [ "$1" = 2 ]; then
-### Part II ###
+###################
+##### Part II #####
+###################
 
 # Locale, hwclock, hostname
 echo -e "${BLUE}Seting Up the Locale${NC}"
@@ -151,7 +156,10 @@ $SEPARATOR
 echo -e "${GREEN}Press 'Control + d' and Reboot${NC}"
 
 elif [ "$1" = 3 ]; then
-### Part III
+####################
+##### Part III #####
+####################
+
 echo -e "${BLUE}Installing Paru AUR Helper${NC}"
 git clone https://aur.archlinux.org/paru-bin.git
 cd paru-bin
@@ -177,5 +185,8 @@ nvim ~/.xinitrc
 echo -e "${GREEN}Installer Finished${NC}"
 
 else
-  echo "1/2/3"
+  echo -e "${BLUE}This Script Only Works with Arguments.${NC}"
+  echo -e "${GREEN}sh arch_installer 1.${NC}"
+  echo -e "${GREEN}sh arch_installer 2.${NC}"
+  echo -e "${GREEN}sh arch_installer 3.${NC}"
 fi
