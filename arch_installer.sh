@@ -90,9 +90,9 @@ base_pkgs() {
   genfstab -U /mnt >> /mnt/etc/fstab
   
   # Message
-  echo -e "${BLUE}Clone the repo again and run part_2${NC}"
+  echo -e "${BLUE}Run sh arch_installer.sh 2${NC}"
   $SEPARATOR
-  cp arch_installer/ /mnt
+  cp arch_installer.sh /mnt
   # arch-chroot
   arch-chroot /mnt
 }
@@ -115,8 +115,6 @@ locale() {
   echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
   read host
   echo $host >> /etc/hostname
-  echo "127.0.0.1       localhost" >> /etc/hosts
-  echo "::1             localhost" >> /etc/hosts
   echo "$host is set as the hostname of the computer"
   sleep 1
   clear
