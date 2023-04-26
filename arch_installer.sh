@@ -91,7 +91,7 @@ base_pkgs() {
   # Pacstrap - fstab - arch-chroot
   echo -e "${BLUE}Installing Packages with Pacstrap${NC}"
   $SEPARATOR
-  pacstrap -K /mnt base linux linux-firmware linux-headers neovim git
+  pacstrap -K /mnt base linux linux-firmware linux-headers neovim git fzf
   genfstab -U /mnt >> /mnt/etc/fstab
   
   # Message
@@ -116,6 +116,7 @@ locale() {
   echo "KEYMAP=$kb_layout" >> /etc/vconsole.conf
   echo "$kb_layout is set in /etc/vconsole.conf"
   sleep 1
+  clear
   echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
   read host
   echo $host >> /etc/hostname
@@ -133,7 +134,7 @@ pacman_conf() {
   pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish xorg xorg-xinit
   $SEPARATOR
   echo -e "${GREEN}Installaling Base-devel Packages minus Sudo${NC}"
-  pacman -Sy --needed archlinux-keyring autoconf automake binutils bison debugedit fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed texinfo which
+  pacman -Sy --needed --noconfirm archlinux-keyring autoconf automake binutils bison debugedit fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed texinfo which
   echo -e "${GREEN}Installation Done${NC}"
   clear
 }
@@ -162,9 +163,9 @@ grub_uefi() {
 
 services() {
   # Enbling Services
-  echo -e "${BLUE}Enabling Services${NC}"
+  echo -e "${BLUE}Enabling Services (NetworkManager, bluetooth, libvirtd)${NC}"
   systemctl enable NetworkManager
-  systemctl enable bluetooth
+  systemctl enable bluetooth.service
   systemctl enable libvirtd
 }
 
