@@ -31,12 +31,17 @@ check_uefi() {
   fi
 }
 
+fzf_pacman_key() {
+  pacman-key --init
+  pacman -Sy --needed --noconfirm fzf
+  clear
+}
+
 kb_time() {
   # Keyboard and time
-  echo -e "${BLUE}[+] Enter your Keyboard Layout: ${NC}"
   timedatectl set-ntp true
-  read kb_layout
-  loadkeys $kb_layout
+  kb_layout=$(find /usr/share/kbd/keymaps/ -type f -printf "%f\n" | sort -V | sed 's/.map.gz//g' | fzf --header="Choose a Keyboard Layout" || exit 1)
+  loadkeys "$kb_layout"
   echo "$kb_layout is set for your Keyboard Layout"
   sleep 1
   clear
@@ -107,8 +112,7 @@ locale() {
   echo 'pt_BR.UTF-8 UTF-8' >> /etc/locale.gen
   locale-gen
   echo 'LANG=pt_BR.UTF-8' >> /etc/locale.conf
-  echo -e "${BLUE}[+] Enter your Keyboard Layout: ${NC}"
-  read kb_layout
+  kb_layout=$(find /usr/share/kbd/keymaps/ -type f -printf "%f\n" | sort -V | sed 's/.map.gz//g' | fzf --header="Choose a Keyboard Layout" || exit 1)
   echo "KEYMAP=$kb_layout" >> /etc/vconsole.conf
   echo "$kb_layout is set in /etc/vconsole.conf"
   sleep 1
@@ -202,6 +206,7 @@ xinitrc() {
   # Xinitrc
   head -n -5 /etc/X11/xinit/xinitrc >> ~/.xinitrc
   echo "exec awesome" >> ~/.xinitrc
+  clear
   
   echo -e "${GREEN}Installer Finished${NC}"
 }
@@ -209,6 +214,7 @@ xinitrc() {
 if [ "$1" = 1 ]; then
   intro
   check_uefi
+  fzf_pacman_key
   kb_time
   partitioning
   formating
