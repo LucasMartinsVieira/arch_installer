@@ -200,8 +200,8 @@ x11_keyboard() {
 
 xinitrc() {
   # Xinitrc
-  cp /etc/X11/xinit/xinitrc ~/.xinitrc
-  nvim ~/.xinitrc
+  head -n -5 /etc/X11/xinit/xinitrc >> ~/.xinitrc
+  echo "exec awesome" >> ~/.xinitrc
   
   echo -e "${GREEN}Installer Finished${NC}"
 }
