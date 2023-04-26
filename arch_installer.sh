@@ -42,6 +42,7 @@ kb_time() {
   timedatectl set-ntp true
   kb_layout=$(find /usr/share/kbd/keymaps/ -type f -printf "%f\n" | sort -V | sed 's/.map.gz//g' | fzf --header="Choose a Keyboard Layout" || exit 1)
   loadkeys "$kb_layout"
+  $SEPARATOR
   echo "$kb_layout is set for your Keyboard Layout"
   sleep 1
   clear
@@ -114,6 +115,7 @@ locale() {
   echo 'LANG=pt_BR.UTF-8' >> /etc/locale.conf
   kb_layout=$(find /usr/share/kbd/keymaps/ -type f -printf "%f\n" | sort -V | sed 's/.map.gz//g' | fzf --header="Choose a Keyboard Layout" || exit 1)
   echo "KEYMAP=$kb_layout" >> /etc/vconsole.conf
+  $SEPARATOR
   echo "$kb_layout is set in /etc/vconsole.conf"
   sleep 1
   clear
