@@ -8,6 +8,9 @@ NC='\033[0m'       # No Color
 
 SEPARATOR="echo"""
 
+# TODO: Option to have a encrypted Installation
+# TODO: Option to have Multiple Users
+
 ### Part I ###
 
 # Intro
@@ -137,8 +140,7 @@ users() {
   echo -e "${BLUE}Create User${NC}"
   echo -e "${BLUE}[+] User Name: ${NC}"
   read username
-  # arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
-  arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt $username
+  arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
   echo -e "${BLUE}$username Password${NC}"
   arch-chroot /mnt passwd $username
   echo 'permit keepenv persist :wheel' >> /mnt/etc/doas.conf
@@ -163,11 +165,11 @@ services() {
 
 echo_reboot() {
   # Message
-  echo -e "${BLUE}Clone the repo again and run part_3 (after reboot)${NC}"
+  echo -e "${BLUE}Clone the repo again and run sh arch_installer.sh 2 (after reboot)${NC}"
   $SEPARATOR
   
   # Reboot
-  echo -e "${GREEN}Press 'Control + d' and Reboot${NC}"
+  echo -e "${GREEN}Reboot${NC}"
 }
 
 ### Part II ###
