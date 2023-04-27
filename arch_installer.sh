@@ -109,10 +109,9 @@ locale() {
   ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
   arch-chroot /mnt hwclock --systohc
   echo 'pt_BR.UTF-8 UTF-8' >> /mnt/etc/locale.gen
-  locale-gen
+  arch-chroot /mnt locale-gen
   echo 'LANG=pt_BR.UTF-8' >> /mnt/etc/locale.conf
   echo "KEYMAP=$kb_layout" >> /mnt/etc/vconsole.conf
-  $SEPARATOR
   echo "$kb_layout is set in /mnt/etc/vconsole.conf"
   sleep 1
   clear
@@ -124,21 +123,21 @@ locale() {
   clear
 }
 
-### Part II ###
-
 pacman_conf() {
   # Pacman.conf
   echo -e "${BLUE}Installing Essencial Packages${NC}"
-  sed -i "s/#Color/Color/" /etc/pacman.conf
-  sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 5/" /etc/pacman.conf
-  sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
-  pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish xorg xorg-xinit
+  sed -i "s/#Color/Color/" /mnt/etc/pacman.conf
+  sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 5/" /mnt/etc/pacman.conf
+  sed -i "/\[multilib\]/,/Include/"'s/^#//' /mnt/etc/pacman.conf
+  arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish xorg xorg-xinit
   $SEPARATOR
   echo -e "${GREEN}Installaling Base-devel Packages minus Sudo${NC}"
-  pacman -Sy --needed --noconfirm archlinux-keyring autoconf automake binutils bison debugedit fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed texinfo which
+  arch-chroot /mnt pacman -Sy --needed --noconfirm archlinux-keyring autoconf automake binutils bison debugedit fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed texinfo which
   echo -e "${GREEN}Installation Done${NC}"
   clear
 }
+
+### Part II ###
 
 users() {
   # User and Root Password
@@ -223,9 +222,10 @@ if [ "$1" = 1 ]; then
   mounting
   base_pkgs
   locale
+  pacman_conf
 elif [ "$1" = 2 ]; then
   # locale
-  pacman_conf
+  # pacman_conf
   users
   grub_uefi
   services
