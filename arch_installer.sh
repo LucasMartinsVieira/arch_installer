@@ -100,32 +100,31 @@ base_pkgs() {
   $SEPARATOR
   cp arch_installer.sh /mnt
   # arch-chroot
-  arch-chroot /mnt
+  # arch-chroot /mnt
 }
-
-### Part II ###
 
 locale() {
   # Locale, hwclock, hostname
   echo -e "${BLUE}Seting Up the Locale${NC}"
-  ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
-  hwclock --systohc
-  echo 'pt_BR.UTF-8 UTF-8' >> /etc/locale.gen
+  ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
+  arch-chroot /mnt hwclock --systohc
+  echo 'pt_BR.UTF-8 UTF-8' >> /mnt/etc/locale.gen
   locale-gen
-  echo 'LANG=pt_BR.UTF-8' >> /etc/locale.conf
-  kb_layout=$(find /usr/share/kbd/keymaps/ -type f -printf "%f\n" | sort -V | sed 's/.map.gz//g' | fzf --header="Choose a Keyboard Layout" || exit 1)
-  echo "KEYMAP=$kb_layout" >> /etc/vconsole.conf
+  echo 'LANG=pt_BR.UTF-8' >> /mnt/etc/locale.conf
+  echo "KEYMAP=$kb_layout" >> /mnt/etc/vconsole.conf
   $SEPARATOR
-  echo "$kb_layout is set in /etc/vconsole.conf"
+  echo "$kb_layout is set in /mnt/etc/vconsole.conf"
   sleep 1
   clear
   echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
   read host
-  echo $host >> /etc/hostname
+  echo $host >> /mnt/etc/hostname
   echo "$host is set as the hostname of the computer"
   sleep 1
   clear
 }
+
+### Part II ###
 
 pacman_conf() {
   # Pacman.conf
@@ -223,8 +222,9 @@ if [ "$1" = 1 ]; then
   formating
   mounting
   base_pkgs
-elif [ "$1" = 2 ]; then
   locale
+elif [ "$1" = 2 ]; then
+  # locale
   pacman_conf
   users
   grub_uefi
