@@ -114,7 +114,6 @@ locale() {
   echo "KEYMAP=$kb_layout" >> /mnt/etc/vconsole.conf
   echo "$kb_layout is set in /mnt/etc/vconsole.conf"
   sleep 1
-  clear
   echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
   read host
   echo $host >> /mnt/etc/hostname
@@ -142,14 +141,15 @@ pacman_conf() {
 users() {
   # User and Root Password
   echo -e "${BLUE}Root Password${NC}"
-  passwd
+  arch-chroot /mnt passwd
   echo -e "${BLUE}Create User${NC}"
   echo -e "${BLUE}[+] User Name: ${NC}"
   read username
-  useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
+  # arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
+  arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt $username
   echo -e "${BLUE}$username Password${NC}"
-  passwd $username
-  echo 'permit keepenv persist :wheel' >> /etc/doas.conf
+  arch-chroot /mnt passwd $username
+  echo 'permit keepenv persist :wheel' >> /mnt/etc/doas.conf
   clear
 }
 
@@ -223,10 +223,11 @@ if [ "$1" = 1 ]; then
   base_pkgs
   locale
   pacman_conf
+  users
 elif [ "$1" = 2 ]; then
   # locale
   # pacman_conf
-  users
+  # users
   grub_uefi
   services
   echo_reboot
