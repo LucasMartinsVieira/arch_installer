@@ -94,11 +94,7 @@ base_pkgs() {
   $SEPARATOR
   pacstrap -K /mnt base linux linux-firmware linux-headers neovim git fzf
   genfstab -U /mnt >> /mnt/etc/fstab
-  
-  # Message
-  echo -e "${BLUE}Run sh arch_installer.sh 2${NC}"
-  $SEPARATOR
-  cp arch_installer.sh /mnt
+  clear
 }
 
 locale() {
@@ -157,14 +153,12 @@ grub_uefi() {
   arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 }
 
-### Part II ###
-
 services() {
   # Enbling Services
   echo -e "${BLUE}Enabling Services (NetworkManager, bluetooth, libvirtd)${NC}"
-  systemctl enable NetworkManager
-  systemctl enable bluetooth.service
-  systemctl enable libvirtd
+  arch-chroot /mnt systemctl enable NetworkManager
+  arch-chroot /mnt systemctl enable bluetooth.service
+  arch-chroot /mnt systemctl enable libvirtd
 }
 
 echo_reboot() {
@@ -176,7 +170,7 @@ echo_reboot() {
   echo -e "${GREEN}Press 'Control + d' and Reboot${NC}"
 }
 
-### Part III ###
+### Part II ###
 
 aur_helper() {
   echo -e "${BLUE}Installing Paru AUR Helper${NC}"
@@ -223,14 +217,9 @@ if [ "$1" = 1 ]; then
   pacman_conf
   users
   grub_uefi
-elif [ "$1" = 2 ]; then
-  # locale
-  # pacman_conf
-  # users
-  # grub_uefi
   services
   echo_reboot
-elif [ "$1" = 3 ]; then
+elif [ "$1" = 2 ]; then
   aur_helper
   x11_keyboard
   xinitrc
@@ -238,5 +227,4 @@ else
   echo -e "${BLUE}This Script Only Works with Arguments.${NC}"
   echo -e "${GREEN}sh arch_installer 1.${NC}"
   echo -e "${GREEN}sh arch_installer 2.${NC}"
-  echo -e "${GREEN}sh arch_installer 3.${NC}"
 fi
