@@ -187,6 +187,7 @@ xinitrc() {
 }
 
 aur_helper() {
+  # FIX: Make this work
   echo -e "${BLUE}Installing Paru AUR Helper${NC}"
   arch-chroot /mnt su $username
   arch-chroot /mnt git clone https://aur.archlinux.org/paru-bin.git
@@ -204,30 +205,21 @@ aur_helper() {
   sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
   sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
 }
-if [ "$1" = 1 ]; then
-  intro
-  check_uefi
-  fzf_pacman_key
-  kb_time
-  partitioning
-  formating
-  mounting
-  base_pkgs
-  locale
-  pacman_conf
-  users
-  grub_uefi
-  services
-  echo_reboot
-  x11_keyboard
-  xinitrc
-  aur_helper
-elif [ "$1" = 2 ]; then
-  # aur_helper
-  # x11_keyboard
-  # xinitrc
-else
-  echo -e "${BLUE}This Script Only Works with Arguments.${NC}"
-  echo -e "${GREEN}sh arch_installer 1.${NC}"
-  echo -e "${GREEN}sh arch_installer 2.${NC}"
-fi
+
+intro
+check_uefi
+fzf_pacman_key
+kb_time
+partitioning
+formating
+mounting
+base_pkgs
+locale
+pacman_conf
+users
+grub_uefi
+services
+echo_reboot
+x11_keyboard
+xinitrc
+# aur_helper
