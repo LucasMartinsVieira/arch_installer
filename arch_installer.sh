@@ -99,8 +99,6 @@ base_pkgs() {
   echo -e "${BLUE}Run sh arch_installer.sh 2${NC}"
   $SEPARATOR
   cp arch_installer.sh /mnt
-  # arch-chroot
-  # arch-chroot /mnt
 }
 
 locale() {
@@ -136,8 +134,6 @@ pacman_conf() {
   clear
 }
 
-### Part II ###
-
 users() {
   # User and Root Password
   echo -e "${BLUE}Root Password${NC}"
@@ -156,10 +152,12 @@ users() {
 grub_uefi() {
   # Grub with uefi
   echo -e "${BLUE}Setting Up Grub With UEFI${NC}"
-  sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/' /etc/default/grub
-  grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
-  grub-mkconfig -o /boot/grub/grub.cfg
+  sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/' /mnt/etc/default/grub
+  arch-chroot /mnt grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+  arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 }
+
+### Part II ###
 
 services() {
   # Enbling Services
@@ -224,11 +222,12 @@ if [ "$1" = 1 ]; then
   locale
   pacman_conf
   users
+  grub_uefi
 elif [ "$1" = 2 ]; then
   # locale
   # pacman_conf
   # users
-  grub_uefi
+  # grub_uefi
   services
   echo_reboot
 elif [ "$1" = 3 ]; then
