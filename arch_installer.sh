@@ -194,16 +194,17 @@ aur_helper() {
 
 x11_keyboard() {
   # Set X11 keyboard
-  doas localectl set-x11-keymap br
+  # doas localectl set-x11-keymap br
+  arch-chroot /mnt localectl set-keymap br
 }
 
 xinitrc() {
   # Xinitrc
-  head -n -5 /etc/X11/xinit/xinitrc >> ~/.xinitrc
-  echo "exec awesome" >> ~/.xinitrc
+  head -n -5 /mnt/etc/X11/xinit/xinitrc >> /mnt/home/$username/.xinitrc
+  echo "exec awesome" >> /mnt/home/$username/.xinitrc
   clear
   
-  echo -e "${GREEN}Installer Finished${NC}"
+  # echo -e "${GREEN}Installer Finished${NC}"
 }
 
 if [ "$1" = 1 ]; then
@@ -221,10 +222,12 @@ if [ "$1" = 1 ]; then
   grub_uefi
   services
   echo_reboot
-elif [ "$1" = 2 ]; then
-  aur_helper
   x11_keyboard
   xinitrc
+elif [ "$1" = 2 ]; then
+  aur_helper
+  # x11_keyboard
+  # xinitrc
 else
   echo -e "${BLUE}This Script Only Works with Arguments.${NC}"
   echo -e "${GREEN}sh arch_installer 1.${NC}"
