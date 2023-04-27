@@ -172,29 +172,8 @@ echo_reboot() {
   echo -e "${GREEN}Reboot${NC}"
 }
 
-### Part II ###
-
-aur_helper() {
-  echo -e "${BLUE}Installing Paru AUR Helper${NC}"
-  git clone https://aur.archlinux.org/paru-bin.git
-  cd paru-bin
-  makepkg -si
-  cd ..
-  rm paru-bin -rf
-  sleep 1
-
-  # Paru.conf
-  doas sed -i 's/\#\[bin\]/\[bin\]/' /etc/paru.conf
-  doas sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /etc/paru.conf
-  doas sed -i "s|#FileManager = vifm|FileManager = lf|" /etc/paru.conf
-  doas sed -i 's/\#BottomUp/BottomUp/' /etc/paru.conf
-  doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
-  doas sed -i "s/#CleanAfter/CleanAfter/" /etc/paru.conf
-}
-
 x11_keyboard() {
   # Set X11 keyboard
-  # doas localectl set-x11-keymap br
   arch-chroot /mnt localectl set-keymap br
 }
 
@@ -207,6 +186,24 @@ xinitrc() {
   # echo -e "${GREEN}Installer Finished${NC}"
 }
 
+aur_helper() {
+  echo -e "${BLUE}Installing Paru AUR Helper${NC}"
+  arch-chroot /mnt su $username
+  arch-chroot /mnt git clone https://aur.archlinux.org/paru-bin.git
+  arch-chroot /mnt cd paru-bin
+  arch-chroot /mnt doas makepkg -si
+  arch-chroot /mnt cd ..
+  arch-chroot /mnt rm paru-bin -rf
+  sleep 1
+
+  # Paru.conf
+  sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
+  sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
+  sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
+  sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
+  sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
+  sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
+}
 if [ "$1" = 1 ]; then
   intro
   check_uefi
@@ -224,8 +221,9 @@ if [ "$1" = 1 ]; then
   echo_reboot
   x11_keyboard
   xinitrc
-elif [ "$1" = 2 ]; then
   aur_helper
+elif [ "$1" = 2 ]; then
+  # aur_helper
   # x11_keyboard
   # xinitrc
 else
