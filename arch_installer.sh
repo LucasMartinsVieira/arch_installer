@@ -163,17 +163,8 @@ services() {
   arch-chroot /mnt systemctl enable libvirtd
 }
 
-echo_reboot() {
-  # Message
-  echo -e "${BLUE}Clone the repo again and run sh arch_installer.sh 2 (after reboot)${NC}"
-  $SEPARATOR
-  
-  # Reboot
-  echo -e "${GREEN}Reboot${NC}"
-}
-
 x11() {
-  read -p "[+] Do you want to install a display server? [y/n]: " answer_x11
+  read -p "[+] Do you want to install a display server (xorg)? [y/n]: " answer_x11
   if [[ $answer_x11 == y ]]; then
     arch-chroot /mnt pacman -Sy xorg xorg-xinit
 
@@ -187,42 +178,12 @@ x11() {
   fi
 }
 
-aur_helper() {
-  # FIX: Make this work
-  # echo -e "${BLUE}Installing Paru AUR Helper${NC}"
-  # arch-chroot /mnt su $username
-  # arch-chroot /mnt git clone https://aur.archlinux.org/paru-bin.git
-  # arch-chroot /mnt cd paru-bin
-  # arch-chroot /mnt doas makepkg -si
-  # arch-chroot /mnt cd ..
-  # arch-chroot /mnt rm paru-bin -rf
-  # sleep 1
-
-  read -p "[+] Do you want to install aur helper Paru? [y/n]: " answer_aur
-  if [[ $answer_aur == y ]]; then
-    echo -e "${BLUE}Installing Paru AUR Helper${NC}"
-    echo "Run the following commands"
-    echo "cd paru-bin"
-    echo "doas makepkg -si"
-    echo "cd .."
-    echo "rm -rf paru-bin"
-    echo "exit"
-    arch-chroot /mnt git clone https://aur.archlinux.org/paru-bin.git
-    arch-chroot -u $username /mnt 
-
-    # Paru.conf
-    sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
-    sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
-    sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
-    sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
-    sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
-    sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
-  fi
-
-}
-
 finish() {
   echo -e "${GREEN}Installer Finished${NC}"
+
+  echo -e "${BLUE}If you want to install the Aur Helper Paru${NC}"
+  echo -e "${BLUE}Reboot and run sh arch_installer.sh 2${NC}"
+  cp arch_installer.sh /mnt/home/lucas
 }
 
 intro
@@ -238,7 +199,27 @@ pacman_conf
 users
 grub_uefi
 services
-echo_reboot
 x11
-aur_helper
 finish
+
+aur_helper() {
+  echo -e "${GREEN}Installing Aur Helper Paru${NC}"
+  git clone https://aur.archlinux.org/paru-bin.git
+  cd paru-bin
+  makepkg -si
+  cd ..
+  rm paru-bin -rf
+
+  # Paru.conf
+  doas sed -i 's/\#\[bin\]/\[bin\]/' /etc/paru.conf
+  doas sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /etc/paru.conf
+  doas sed -i "s|#FileManager = vifm|FileManager = lf|" /etc/paru.conf
+  doas sed -i 's/\#BottomUp/BottomUp/' /etc/paru.conf
+  doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
+  doas sed -i "s/#CleanAfter/CleanAfter/" /etc/paru.conf
+  echo -e "${GREEN}Installation Finished${NC}"
+}
+
+if [ "$1" = 2 ]; then
+  aur_helper
+fi
