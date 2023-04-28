@@ -125,7 +125,7 @@ pacman_conf() {
   sed -i "s/#Color/Color/" /mnt/etc/pacman.conf
   sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 5/" /mnt/etc/pacman.conf
   sed -i "/\[multilib\]/,/Include/"'s/^#//' /mnt/etc/pacman.conf
-  arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish xorg xorg-xinit
+  arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish
   $SEPARATOR
   echo -e "${GREEN}Installaling Base-devel Packages minus Sudo${NC}"
   arch-chroot /mnt pacman -Sy --needed --noconfirm archlinux-keyring autoconf automake binutils bison debugedit fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed texinfo which
@@ -172,38 +172,57 @@ echo_reboot() {
   echo -e "${GREEN}Reboot${NC}"
 }
 
-x11_keyboard() {
-  # Set X11 keyboard
-  arch-chroot /mnt localectl set-keymap br
-}
+x11() {
+  read -p "[+] Do you want to install a display server? [y/n]: " answer_x11
+  if [[ $answer_x11 == y ]]; then
+    arch-chroot /mnt pacman -Sy xorg xorg-xinit
 
-xinitrc() {
-  # Xinitrc
-  head -n -5 /mnt/etc/X11/xinit/xinitrc >> /mnt/home/$username/.xinitrc
-  echo "exec awesome" >> /mnt/home/$username/.xinitrc
-  clear
-  
-  # echo -e "${GREEN}Installer Finished${NC}"
+    # Set X11 keyboard
+    arch-chroot /mnt localectl set-keymap br
+
+    # Xinitrc
+    head -n -5 /mnt/etc/X11/xinit/xinitrc >> /mnt/home/$username/.xinitrc
+    echo "exec awesome" >> /mnt/home/$username/.xinitrc
+    clear
+  fi
 }
 
 aur_helper() {
   # FIX: Make this work
-  echo -e "${BLUE}Installing Paru AUR Helper${NC}"
-  arch-chroot /mnt su $username
-  arch-chroot /mnt git clone https://aur.archlinux.org/paru-bin.git
-  arch-chroot /mnt cd paru-bin
-  arch-chroot /mnt doas makepkg -si
-  arch-chroot /mnt cd ..
-  arch-chroot /mnt rm paru-bin -rf
-  sleep 1
+  # echo -e "${BLUE}Installing Paru AUR Helper${NC}"
+  # arch-chroot /mnt su $username
+  # arch-chroot /mnt git clone https://aur.archlinux.org/paru-bin.git
+  # arch-chroot /mnt cd paru-bin
+  # arch-chroot /mnt doas makepkg -si
+  # arch-chroot /mnt cd ..
+  # arch-chroot /mnt rm paru-bin -rf
+  # sleep 1
 
-  # Paru.conf
-  sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
-  sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
-  sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
-  sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
-  sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
-  sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
+  read -p "[+] Do you want to install aur helper Paru? [y/n]: " answer_aur
+  if [[ $answer_aur == y ]]; then
+    echo -e "${BLUE}Installing Paru AUR Helper${NC}"
+    echo "Run the following commands"
+    echo "cd paru-bin"
+    echo "doas makepkg -si"
+    echo "cd .."
+    echo "rm -rf paru-bin"
+    echo "exit"
+    arch-chroot /mnt git clone https://aur.archlinux.org/paru-bin.git
+    arch-chroot -u $username /mnt 
+
+    # Paru.conf
+    sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
+    sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
+    sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
+    sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
+    sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
+    sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
+  fi
+
+}
+
+finish() {
+  echo -e "${GREEN}Installer Finished${NC}"
 }
 
 intro
@@ -220,6 +239,6 @@ users
 grub_uefi
 services
 echo_reboot
-x11_keyboard
-xinitrc
-# aur_helper
+x11
+aur_helper
+finish
