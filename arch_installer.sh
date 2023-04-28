@@ -10,6 +10,8 @@ SEPARATOR="echo"""
 
 # TODO: Option to have a encrypted Installation
 # TODO: Option to have Multiple Users
+# TODO: Add environment variables
+# TODO: Help function
 
 ### Part I ###
 
@@ -186,22 +188,6 @@ finish() {
   cp arch_installer.sh /mnt/home/lucas
 }
 
-intro
-check_uefi
-fzf_pacman_key
-kb_time
-partitioning
-formating
-mounting
-base_pkgs
-locale
-pacman_conf
-users
-grub_uefi
-services
-x11
-finish
-
 aur_helper() {
   echo -e "${GREEN}Installing Aur Helper Paru${NC}"
   git clone https://aur.archlinux.org/paru-bin.git
@@ -220,6 +206,39 @@ aur_helper() {
   echo -e "${GREEN}Installation Finished${NC}"
 }
 
+# intro
+# check_uefi
+# fzf_pacman_key
+# kb_time
+# partitioning
+# formating
+# mounting
+# base_pkgs
+# locale
+# pacman_conf
+# users
+# grub_uefi
+# services
+# x11
+# finish
+
 if [ "$1" = 2 ]; then
   aur_helper
+else
+  intro
+  check_uefi
+  fzf_pacman_key
+  kb_time
+  partitioning
+  formating
+  mounting
+  base_pkgs
+  locale
+  pacman_conf
+  users
+  grub_uefi
+  services
+  x11
+  finish
 fi
+
