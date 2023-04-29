@@ -13,7 +13,12 @@ SEPARATOR="echo"""
 # TODO: Add environment variables
 # TODO: Help function
 
-### Part I ###
+help() {
+     printf 'arch_installer.sh [options]\n
+    -h --help       Displays this help menu
+    -i --install    Base archlinux Installation
+    -a --aur        Installs an Aur Helper'
+}
 
 # Intro
 intro() {
@@ -184,7 +189,7 @@ finish() {
   echo -e "${GREEN}Installer Finished${NC}"
 
   echo -e "${BLUE}If you want to install the Aur Helper Paru${NC}"
-  echo -e "${BLUE}Reboot and run sh arch_installer.sh 2${NC}"
+  echo -e "${BLUE}Reboot and run sh arch_installer.sh -a${NC}"
   cp arch_installer.sh /mnt/home/lucas
 }
 
@@ -206,25 +211,7 @@ aur_helper() {
   echo -e "${GREEN}Installation Finished${NC}"
 }
 
-# intro
-# check_uefi
-# fzf_pacman_key
-# kb_time
-# partitioning
-# formating
-# mounting
-# base_pkgs
-# locale
-# pacman_conf
-# users
-# grub_uefi
-# services
-# x11
-# finish
-
-if [ "$1" = 2 ]; then
-  aur_helper
-else
+install() {
   intro
   check_uefi
   fzf_pacman_key
@@ -240,5 +227,14 @@ else
   services
   x11
   finish
-fi
+}
 
+case "$1" in
+  -h) help ;;
+  -a) aur_helper ;;
+  -i) install ;;
+  --aur) aur_helper ;;
+  --install) install ;;
+  --help) help ;;
+   *) help;;
+esac
