@@ -151,7 +151,7 @@ pacman_conf() {
 	sed -i "s/#Color/Color/" /mnt/etc/pacman.conf
 	sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 5/" /mnt/etc/pacman.conf
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /mnt/etc/pacman.conf
-	arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish
+	arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish openssh
 	$SEPARATOR
 	echo -e "${GREEN}Installaling Base-devel Packages minus Sudo${NC}"
 	arch-chroot /mnt pacman -Sy --needed --noconfirm archlinux-keyring autoconf automake binutils bison debugedit fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed texinfo which
@@ -183,10 +183,11 @@ grub_uefi() {
 
 services() {
 	# Enbling Services
-	echo -e "${BLUE}Enabling Services (NetworkManager, bluetooth, libvirtd)${NC}"
+	echo -e "${BLUE}Enabling Services (NetworkManager, bluetooth, libvirtd, sshd)${NC}"
 	arch-chroot /mnt systemctl enable NetworkManager
 	arch-chroot /mnt systemctl enable bluetooth.service
 	arch-chroot /mnt systemctl enable libvirtd
+	arch-chroot /mnt systemctl enable sshd.service
 }
 
 x11() {
