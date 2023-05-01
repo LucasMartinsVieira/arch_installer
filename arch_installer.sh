@@ -11,13 +11,39 @@ SEPARATOR="echo"""
 # TODO: Option to have a encrypted Installation
 # TODO: Option to have Multiple Users
 # TODO: Add environment variables
-# TODO: Help function
 
 help() {
      printf 'arch_installer.sh [options]\n
     -h --help       Displays this help menu
     -i --install    Base archlinux Installation
     -a --aur        Installs an Aur Helper'
+}
+
+add_user() {
+  read -p "How many user(s) you wanna add? " answer_users
+
+   i=$answer_users
+
+   until [ $i -eq 0 ]
+    do
+   # echo i: $i
+    echo -e "${BLUE}Create User${NC}"
+    echo -e "${BLUE}[+] User Name: ${NC}"
+    read username
+    useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
+    echo -e "${BLUE}$username Password${NC}"
+    passwd $username
+    ((i=i-1))
+    done
+
+
+  # if [[ $answer == y ]]; then
+  #   echo -e "${BLUE}[+] Enter the Swap partition: ${NC}"
+  #   read swappart
+  #   mkswap $swappart
+  #   sleep 1
+  #   swapon $swappart
+  # fi
 }
 
 # Intro
@@ -232,8 +258,10 @@ install() {
 case "$1" in
   -h) help ;;
   -a) aur_helper ;;
+  -A) add_user ;;
   -i) install ;;
   --aur) aur_helper ;;
+  --adduser) add_user ;;
   --install) install ;;
   --help) help ;;
    *) help;;
