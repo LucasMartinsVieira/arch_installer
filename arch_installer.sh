@@ -25,14 +25,13 @@ add_user() {
 		i=$answer_users
 
 		until [ $i -eq 0 ]; do
-			echo i: $i
 			echo -e "${BLUE}Create User${NC}"
 			echo -e "${BLUE}[+] User Name: ${NC}"
 			read username
 			useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
 			echo -e "${BLUE}$username Password${NC}"
 			passwd $username
-			( (--i))
+			((--i))
 		done
 	else
 		echo "Run as root"
