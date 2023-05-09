@@ -195,7 +195,7 @@ x11() {
 		arch-chroot /mnt pacman -Sy xorg xorg-xinit
 
 		# Set X11 keyboard
-		arch-chroot /mnt localectl set-keymap br
+		arch-chroot /mnt localectl set-keymap "$kb_layout"
 
 		# Xinitrc
 		head -n -5 /mnt/etc/X11/xinit/xinitrc >>/mnt/home/$username/.xinitrc
