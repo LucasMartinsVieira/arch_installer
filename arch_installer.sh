@@ -10,15 +10,6 @@ SEPARATOR="echo"""
 
 # TODO: Option to have a encrypted Installation
 
-help() {
-	printf 'arch_installer.sh [options]\n
-    -h --help       Displays this help menu
-    -i --install    Base archlinux Installation
-    -a --aur        Installs an Aur Helper
-    -A --adduser    Add a user(s) to the system'
-}
-
-
 # Intro
 intro() {
 	clear
@@ -163,10 +154,11 @@ grub_uefi() {
 
 services() {
 	# Enbling Services
-	echo -e "${BLUE}Enabling Services (NetworkManager, bluetooth, libvirtd)${NC}"
+	echo -e "${BLUE}Enabling Services (NetworkManager, bluetooth, libvirtd and sshd)${NC}"
 	arch-chroot /mnt systemctl enable NetworkManager
 	arch-chroot /mnt systemctl enable bluetooth.service
 	arch-chroot /mnt systemctl enable libvirtd
+	arch-chroot /mnt systemctl enable sshd
 }
 
 x11() {
@@ -211,6 +203,7 @@ aur_helper() {
 }
 
 add_user() {
+  "$SEPARATOR"
 	read -p "[+] Do you want to add more users to the system? [y/n]: " answer_add_user
 	if [[ $answer_add_user == y ]]; then
 
@@ -236,42 +229,25 @@ add_user() {
 }
 
 finish() {
+  "$SEPARATOR"
 	echo -e "${GREEN}Installer Finished${NC}"
-
-	# echo -e "${BLUE}If you want to install the Aur Helper Paru${NC}"
-	# echo -e "${BLUE}Reboot and run sh arch_installer.sh -a${NC}"
-	# cp arch_installer.sh /mnt/home/lucas
+	echo -e "${BLUE}Now reboot the machine.${NC}"
 }
 
-
-install() {
-	intro
-	check_uefi
-	fzf_pacman_key
-	kb_time
-	partitioning
-	formating
-	mounting
-	base_pkgs
-	locale
-	pacman_conf
-	users
-	grub_uefi
-	services
-	x11
-  aur_helper
-  add_user
-	finish
-}
-
-case "$1" in
--h) help ;;
--a) aur_helper ;;
--A) add_user ;;
--i) install ;;
---aur) aur_helper ;;
---adduser) add_user ;;
---install) install ;;
---help) help ;;
-*) help ;;
-esac
+intro
+check_uefi
+fzf_pacman_key
+kb_time
+partitioning
+formating
+mounting
+base_pkgs
+locale
+pacman_conf
+users
+grub_uefi
+services
+x11
+aur_helper
+add_user
+finish
