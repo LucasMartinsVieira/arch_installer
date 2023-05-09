@@ -18,26 +18,6 @@ help() {
     -A --adduser    Add a user(s) to the system'
 }
 
-add_user() {
-	if [ "$(id -u)" -eq 0 ]; then
-		read -p "How many user(s) you wanna add? " answer_users
-
-		i=$answer_users
-
-		until [ $i -eq 0 ]; do
-			echo i: $i
-			echo -e "${BLUE}Create User${NC}"
-			echo -e "${BLUE}[+] User Name: ${NC}"
-			read username
-			useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
-			echo -e "${BLUE}$username Password${NC}"
-			passwd $username
-			( (--i))
-		done
-	else
-		echo "Run as root"
-	fi
-}
 
 # Intro
 intro() {
@@ -205,24 +185,12 @@ x11() {
 	fi
 }
 
-finish() {
-	echo -e "${GREEN}Installer Finished${NC}"
-
-	echo -e "${BLUE}If you want to install the Aur Helper Paru${NC}"
-	echo -e "${BLUE}Reboot and run sh arch_installer.sh -a${NC}"
-	cp arch_installer.sh /mnt/home/lucas
-}
-
 aur_helper() {
-	echo -e "${GREEN}Installing Aur Helper Paru${NC}"
-	git clone https://aur.archlinux.org/paru-bin.git
-	cd paru-bin
-	makepkg -si
-	cd ..
-	rm paru-bin -rf
-
+	read -p "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
+	if [[ $answer_paru == y ]]; then
   # Install Paru
-  arch-chroot -u work /mnt sh -c "
+	echo -e "${GREEN}Installing Aur Helper Paru${NC}"
+  arch-chroot -u "$username" /mnt sh -c "
   cd /home/$username;
   git clone https://aur.archlinux.org/paru-bin.git;
   cd paru-bin;
@@ -239,7 +207,42 @@ aur_helper() {
 	sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
 	sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
 	echo -e "${GREEN}Installation Finished${NC}"
+  fi
 }
+
+add_user() {
+	read -p "[+] Do you want to add more users to the system? [y/n]: " answer_add_user
+	if [[ $answer_add_user == y ]]; then
+
+	if [ "$(id -u)" -eq 0 ]; then
+		read -p "How many user(s) you wanna add? " answer_users
+
+		i=$answer_users
+
+		until [ $i -eq 0 ]; do
+			echo i: $i
+			echo -e "${BLUE}Create User${NC}"
+			echo -e "${BLUE}[+] User Name: ${NC}"
+			read username
+			arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
+			echo -e "${BLUE}$username Password${NC}"
+			arch-chroot /mnt passwd $username
+			((--i))
+		done
+	else
+		echo "Run as root"
+	fi
+  fi
+}
+
+finish() {
+	echo -e "${GREEN}Installer Finished${NC}"
+
+	# echo -e "${BLUE}If you want to install the Aur Helper Paru${NC}"
+	# echo -e "${BLUE}Reboot and run sh arch_installer.sh -a${NC}"
+	# cp arch_installer.sh /mnt/home/lucas
+}
+
 
 install() {
 	intro
@@ -257,6 +260,7 @@ install() {
 	services
 	x11
   aur_helper
+  add_user
 	finish
 }
 
