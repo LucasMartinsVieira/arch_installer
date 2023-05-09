@@ -10,34 +10,6 @@ SEPARATOR="echo"""
 
 # TODO: Option to have a encrypted Installation
 
-help() {
-	printf 'arch_installer.sh [options]\n
-    -h --help       Displays this help menu
-    -i --install    Base archlinux Installation
-    -a --aur        Installs an Aur Helper
-    -A --adduser    Add a user(s) to the system'
-}
-
-add_user() {
-	if [ "$(id -u)" -eq 0 ]; then
-		read -p "How many user(s) you wanna add? " answer_users
-
-		i=$answer_users
-
-		until [ $i -eq 0 ]; do
-			echo -e "${BLUE}Create User${NC}"
-			echo -e "${BLUE}[+] User Name: ${NC}"
-			read username
-			useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
-			echo -e "${BLUE}$username Password${NC}"
-			passwd $username
-			((--i))
-		done
-	else
-		echo "Run as root"
-	fi
-}
-
 # Intro
 intro() {
 	clear
@@ -190,7 +162,7 @@ services() {
 }
 
 x11() {
-  "$SEPARATOR"
+	"$SEPARATOR"
 	read -p "[+] Do you want to install a display server (xorg)? [y/n]: " answer_x11
 	if [[ $answer_x11 == y ]]; then
 		arch-chroot /mnt pacman -Sy xorg xorg-xinit
@@ -206,11 +178,12 @@ x11() {
 }
 
 aur_helper() {
+	"$SEPARATOR"
 	read -p "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
 	if [[ $answer_paru == y ]]; then
-  # Install Paru
-	echo -e "${GREEN}Installing Aur Helper Paru${NC}"
-  arch-chroot -u "$username" /mnt sh -c "
+		# Install Paru
+		echo -e "${GREEN}Installing Aur Helper Paru${NC}"
+		arch-chroot -u "$username" /mnt sh -c "
   cd /home/$username;
   git clone https://aur.archlinux.org/paru-bin.git;
   cd paru-bin;
@@ -219,45 +192,45 @@ aur_helper() {
   rm paru-bin -rf;
   "
 
-	# Paru.conf
-	sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
-	sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
-	sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
-	sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
-	sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
-	sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
-	echo -e "${GREEN}Installation Finished${NC}"
-  fi
+		# Paru.conf
+		sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
+		sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
+		sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
+		sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
+		sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
+		sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
+		echo -e "${GREEN}Installation Finished${NC}"
+	fi
 }
 
 add_user() {
-  "$SEPARATOR"
+	"$SEPARATOR"
 	read -p "[+] Do you want to add more users to the system? [y/n]: " answer_add_user
 	if [[ $answer_add_user == y ]]; then
 
-	if [ "$(id -u)" -eq 0 ]; then
-		read -p "How many user(s) you wanna add? " answer_users
+		if [ "$(id -u)" -eq 0 ]; then
+			read -p "How many user(s) you wanna add? " answer_users
 
-		i=$answer_users
+			i=$answer_users
 
-		until [ $i -eq 0 ]; do
-			echo i: $i
-			echo -e "${BLUE}Create User${NC}"
-			echo -e "${BLUE}[+] User Name: ${NC}"
-			read username
-			arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
-			echo -e "${BLUE}$username Password${NC}"
-			arch-chroot /mnt passwd $username
-			((--i))
-		done
-	else
-		echo "Run as root"
+			until [ $i -eq 0 ]; do
+				echo i: $i
+				echo -e "${BLUE}Create User${NC}"
+				echo -e "${BLUE}[+] User Name: ${NC}"
+				read username
+				arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
+				echo -e "${BLUE}$username Password${NC}"
+				arch-chroot /mnt passwd $username
+				((--i))
+			done
+		else
+			echo "Run as root"
+		fi
 	fi
-  fi
 }
 
 finish() {
-  "$SEPARATOR"
+	"$SEPARATOR"
 	echo -e "${GREEN}Installer Finished${NC}"
 	echo -e "${BLUE}Now reboot the machine.${NC}"
 }
