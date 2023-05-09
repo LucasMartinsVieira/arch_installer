@@ -190,6 +190,7 @@ services() {
 }
 
 x11() {
+  "$SEPARATOR"
 	read -p "[+] Do you want to install a display server (xorg)? [y/n]: " answer_x11
 	if [[ $answer_x11 == y ]]; then
 		arch-chroot /mnt pacman -Sy xorg xorg-xinit
@@ -220,13 +221,23 @@ aur_helper() {
 	cd ..
 	rm paru-bin -rf
 
+  # Install Paru
+  arch-chroot -u work /mnt sh -c "
+  cd /home/$username;
+  git clone https://aur.archlinux.org/paru-bin.git;
+  cd paru-bin;
+  makepkg -si;
+  cd ..;
+  rm paru-bin -rf;
+  "
+
 	# Paru.conf
-	doas sed -i 's/\#\[bin\]/\[bin\]/' /etc/paru.conf
-	doas sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /etc/paru.conf
-	doas sed -i "s|#FileManager = vifm|FileManager = lf|" /etc/paru.conf
-	doas sed -i 's/\#BottomUp/BottomUp/' /etc/paru.conf
-	doas sed -i "s/#RemoveMake/RemoveMake/" /etc/paru.conf
-	doas sed -i "s/#CleanAfter/CleanAfter/" /etc/paru.conf
+	sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
+	sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
+	sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
+	sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
+	sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
+	sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
 	echo -e "${GREEN}Installation Finished${NC}"
 }
 
@@ -245,6 +256,7 @@ install() {
 	grub_uefi
 	services
 	x11
+  aur_helper
 	finish
 }
 
