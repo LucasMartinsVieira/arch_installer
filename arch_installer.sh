@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Colors :
 GREEN='\033[0;32m' # Green
@@ -7,6 +7,7 @@ RED='\033[0;31m'   # Red
 NC='\033[0m'       # No Color
 
 SEPARATOR="echo"""
+ENABLE_SYSTEMD="NetworkManager libvirtd sshd bluetooth"
 
 # TODO: Option to have a encrypted Installation
 
@@ -92,7 +93,7 @@ base_pkgs() {
 	# Pacstrap - fstab - arch-chroot
 	echo -e "${BLUE}Installing Packages with Pacstrap${NC}"
 	$SEPARATOR
-	pacstrap -K /mnt base linux linux-firmware linux-headers neovim git fzf
+	pacstrap -K /mnt base linux linux-firmware linux-headers
 	genfstab -U /mnt >>/mnt/etc/fstab
 	clear
 }
@@ -122,7 +123,7 @@ pacman_conf() {
 	sed -i "s/#Color/Color/" /mnt/etc/pacman.conf
 	sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 5/" /mnt/etc/pacman.conf
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /mnt/etc/pacman.conf
-	arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish openssh
+	arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish openssh neovim git fzf
 	$SEPARATOR
 	echo -e "${GREEN}Installaling Base-devel Packages minus Sudo${NC}"
 	arch-chroot /mnt pacman -Sy --needed --noconfirm archlinux-keyring autoconf automake binutils bison debugedit fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed texinfo which
@@ -154,11 +155,11 @@ grub_uefi() {
 
 services() {
 	# Enbling Services
-	echo -e "${BLUE}Enabling Services (NetworkManager, bluetooth, libvirtd and sshd)${NC}"
-	arch-chroot /mnt systemctl enable NetworkManager
-	arch-chroot /mnt systemctl enable bluetooth.service
-	arch-chroot /mnt systemctl enable libvirtd
-	arch-chroot /mnt systemctl enable sshd
+	echo -e "${BLUE}Enabling Services${NC}"
+
+  for system in $ENABLE_SYSTEMD; do
+   arch-chroot /mnt systemctl enable "$system"
+  done
 }
 
 x11() {
@@ -251,3 +252,4 @@ x11
 aur_helper
 add_user
 finish
+reboot
