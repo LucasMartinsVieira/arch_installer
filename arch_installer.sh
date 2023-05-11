@@ -169,7 +169,7 @@ x11() {
 		arch-chroot /mnt pacman -Sy xorg xorg-xinit
 
 		# Set X11 keyboard
-		arch-chroot /mnt localectl set-keymap br
+		arch-chroot /mnt localectl set-keymap "$kb_layout"
 
 		# Xinitrc
 		head -n -5 /mnt/etc/X11/xinit/xinitrc >>/mnt/home/$username/.xinitrc
@@ -181,6 +181,7 @@ x11() {
 aur_helper() {
 	read -p "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
 	if [[ $answer_paru == y ]]; then
+  arch-chroot /mnt pacman -Sy --needed --noconfirm lf
   # Install Paru
 	echo -e "${GREEN}Installing Aur Helper Paru${NC}"
   arch-chroot -u "$username" /mnt sh -c "
@@ -232,7 +233,7 @@ add_user() {
 finish() {
   "$SEPARATOR"
 	echo -e "${GREEN}Installer Finished${NC}"
-	echo -e "${BLUE}Now reboot the machine.${NC}"
+	echo -e "${BLUE}Now rebooting the machine.${NC}"
 }
 
 intro
