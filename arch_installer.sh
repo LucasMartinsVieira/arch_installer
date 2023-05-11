@@ -92,7 +92,7 @@ base_pkgs() {
 	# Pacstrap - fstab - arch-chroot
 	echo -e "${BLUE}Installing Packages with Pacstrap${NC}"
 	$SEPARATOR
-	pacstrap -K /mnt base linux linux-firmware linux-headers neovim git fzf
+	pacstrap -K /mnt base linux linux-firmware linux-headers
 	genfstab -U /mnt >>/mnt/etc/fstab
 	clear
 }
@@ -122,7 +122,7 @@ pacman_conf() {
 	sed -i "s/#Color/Color/" /mnt/etc/pacman.conf
 	sed -i "s/^#ParallelDownloads = 5$/ParallelDownloads = 5/" /mnt/etc/pacman.conf
 	sed -i "/\[multilib\]/,/Include/"'s/^#//' /mnt/etc/pacman.conf
-	arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish openssh
+	arch-chroot /mnt pacman -Sy --needed --noconfirm doas grub os-prober efibootmgr networkmanager libvirt fish openssh neovim git fzf
 	$SEPARATOR
 	echo -e "${GREEN}Installaling Base-devel Packages minus Sudo${NC}"
 	arch-chroot /mnt pacman -Sy --needed --noconfirm archlinux-keyring autoconf automake binutils bison debugedit fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed texinfo which
@@ -181,6 +181,7 @@ aur_helper() {
 	"$SEPARATOR"
 	read -p "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
 	if [[ $answer_paru == y ]]; then
+	  arch-chroot /mnt pacman -Sy --needed --noconfirm lf
 		# Install Paru
 		echo -e "${GREEN}Installing Aur Helper Paru${NC}"
 		arch-chroot -u "$username" /mnt sh -c "
