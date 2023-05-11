@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Colors :
 GREEN='\033[0;32m' # Green
@@ -6,6 +6,7 @@ BLUE='\033[1;36m'  # Blue
 RED='\033[0;31m'   # Red
 NC='\033[0m'       # No Color
 
+ENABLED_SYSTEMD="NetworkManager libvirtd sshd bluetooth"
 SEPARATOR="echo"""
 
 # TODO: Option to have a encrypted Installation
@@ -154,11 +155,12 @@ grub_uefi() {
 
 services() {
 	# Enbling Services
-	echo -e "${BLUE}Enabling Services (NetworkManager, bluetooth, libvirtd, sshd)${NC}"
-	arch-chroot /mnt systemctl enable NetworkManager
-	arch-chroot /mnt systemctl enable bluetooth.service
-	arch-chroot /mnt systemctl enable libvirtd
-	arch-chroot /mnt systemctl enable sshd.service
+	echo -e "${BLUE}Enabling Services${NC}"
+
+  for system in $ENABLED_SYSTEMD
+  do
+    arch-chroot /mnt systemctl enable $system
+  done
 }
 
 x11() {
@@ -233,7 +235,7 @@ add_user() {
 finish() {
 	"$SEPARATOR"
 	echo -e "${GREEN}Installer Finished${NC}"
-	echo -e "${BLUE}Now reboot the machine.${NC}"
+	echo -e "${BLUE}Now rebooting the machine.${NC}"
 }
 
 intro
@@ -253,3 +255,4 @@ x11
 aur_helper
 add_user
 finish
+reboot
