@@ -10,6 +10,8 @@ ENABLED_SYSTEMD="NetworkManager libvirtd sshd bluetooth"
 SEPARATOR="echo"""
 
 # TODO: Option to have a encrypted Installation
+# TODO: Add a fzf prompt to choose locale
+# TODO: Add a fzf prompt to choose localtime
 
 # Intro
 intro() {
