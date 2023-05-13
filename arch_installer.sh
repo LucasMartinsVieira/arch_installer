@@ -6,10 +6,11 @@ BLUE='\033[1;36m'  # Blue
 RED='\033[0;31m'   # Red
 NC='\033[0m'       # No Color
 
+ENABLED_SYSTEMD="NetworkManager libvirtd sshd bluetooth"
 SEPARATOR="echo"""
-ENABLE_SYSTEMD="NetworkManager libvirtd sshd bluetooth"
 
 # TODO: Option to have a encrypted Installation
+# TODO: Add a fzf prompt to choose localtime
 
 # Intro
 intro() {
@@ -103,9 +104,12 @@ locale() {
 	echo -e "${BLUE}Seting Up the Locale${NC}"
 	ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
 	arch-chroot /mnt hwclock --systohc
-	echo 'pt_BR.UTF-8 UTF-8' >>/mnt/etc/locale.gen
+  LOCALE_GEN=$(grep '[A-Za-z]\.UTF-8' /usr/share/i18n/SUPPORTED | fzf --header="Choose a Locale" || exit 1)
+	echo "$LOCALE_GEN" >>/mnt/etc/locale.gen
 	arch-chroot /mnt locale-gen
-	echo 'LANG=pt_BR.UTF-8' >>/mnt/etc/locale.conf
+  LOCALE_CONF=$(echo "$LOCALE_GEN" | awk -F ' ' '{ print $1 }')
+	echo "LANG=$LOCALE_CONF" >>/mnt/etc/locale.conf
+	# echo 'LANG=pt_BR.UTF-8' >>/mnt/etc/locale.conf
 	echo "KEYMAP=$kb_layout" >>/mnt/etc/vconsole.conf
 	echo "$kb_layout is set in /mnt/etc/vconsole.conf"
 	sleep 1
@@ -157,13 +161,14 @@ services() {
 	# Enbling Services
 	echo -e "${BLUE}Enabling Services${NC}"
 
-  for system in $ENABLE_SYSTEMD; do
-   arch-chroot /mnt systemctl enable "$system"
+  for system in $ENABLED_SYSTEMD
+  do
+    arch-chroot /mnt systemctl enable $system
   done
 }
 
 x11() {
-  "$SEPARATOR"
+	"$SEPARATOR"
 	read -p "[+] Do you want to install a display server (xorg)? [y/n]: " answer_x11
 	if [[ $answer_x11 == y ]]; then
 		arch-chroot /mnt pacman -Sy xorg xorg-xinit
@@ -179,12 +184,13 @@ x11() {
 }
 
 aur_helper() {
+	"$SEPARATOR"
 	read -p "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
 	if [[ $answer_paru == y ]]; then
-  arch-chroot /mnt pacman -Sy --needed --noconfirm lf
-  # Install Paru
-	echo -e "${GREEN}Installing Aur Helper Paru${NC}"
-  arch-chroot -u "$username" /mnt sh -c "
+	  arch-chroot /mnt pacman -Sy --needed --noconfirm lf
+		# Install Paru
+		echo -e "${GREEN}Installing Aur Helper Paru${NC}"
+		arch-chroot -u "$username" /mnt sh -c "
   cd /home/$username;
   git clone https://aur.archlinux.org/paru-bin.git;
   cd paru-bin;
@@ -193,45 +199,45 @@ aur_helper() {
   rm paru-bin -rf;
   "
 
-	# Paru.conf
-	sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
-	sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
-	sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
-	sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
-	sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
-	sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
-	echo -e "${GREEN}Installation Finished${NC}"
-  fi
+		# Paru.conf
+		sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
+		sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
+		sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
+		sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
+		sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
+		sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
+		echo -e "${GREEN}Installation Finished${NC}"
+	fi
 }
 
 add_user() {
-  "$SEPARATOR"
+	"$SEPARATOR"
 	read -p "[+] Do you want to add more users to the system? [y/n]: " answer_add_user
 	if [[ $answer_add_user == y ]]; then
 
-	if [ "$(id -u)" -eq 0 ]; then
-		read -p "How many user(s) you wanna add? " answer_users
+		if [ "$(id -u)" -eq 0 ]; then
+			read -p "How many user(s) you wanna add? " answer_users
 
-		i=$answer_users
+			i=$answer_users
 
-		until [ $i -eq 0 ]; do
-			echo i: $i
-			echo -e "${BLUE}Create User${NC}"
-			echo -e "${BLUE}[+] User Name: ${NC}"
-			read username
-			arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
-			echo -e "${BLUE}$username Password${NC}"
-			arch-chroot /mnt passwd $username
-			((--i))
-		done
-	else
-		echo "Run as root"
+			until [ $i -eq 0 ]; do
+				echo i: $i
+				echo -e "${BLUE}Create User${NC}"
+				echo -e "${BLUE}[+] User Name: ${NC}"
+				read username
+				arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
+				echo -e "${BLUE}$username Password${NC}"
+				arch-chroot /mnt passwd $username
+				((--i))
+			done
+		else
+			echo "Run as root"
+		fi
 	fi
-  fi
 }
 
 finish() {
-  "$SEPARATOR"
+	"$SEPARATOR"
 	echo -e "${GREEN}Installer Finished${NC}"
 	echo -e "${BLUE}Now rebooting the machine.${NC}"
 }
