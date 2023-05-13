@@ -10,7 +10,6 @@ ENABLED_SYSTEMD="NetworkManager libvirtd sshd bluetooth"
 SEPARATOR="echo"""
 
 # TODO: Option to have a encrypted Installation
-# TODO: Add a fzf prompt to choose locale
 # TODO: Add a fzf prompt to choose localtime
 
 # Intro
@@ -55,9 +54,9 @@ partitioning() {
 	# Partioning the Drive
 	echo -e "${BLUE}Partioning the Drive${NC}"
 	lsblk -p
-	printf "${BLUE}[+] Enter The Drive : ${NC}"
+	echo -e "${BLUE}[+] Enter The Drive : ${NC}"
 	read drive
-	fdisk $drive
+	fdisk "$drive"
 	clear
 }
 
@@ -67,24 +66,24 @@ formating() {
 	lsblk -p
 	echo -e "${BLUE}[+] Enter UEFI Partition: ${NC}"
 	read uefipart
-	mkfs.fat -F32 $uefipart
+	mkfs.fat -F32 "$uefipart"
 	read -p "[+] Did you also create Swap partition? [y/n]: " answer
 	if [[ $answer == y ]]; then
 		echo -e "${BLUE}[+] Enter the Swap partition: ${NC}"
 		read swappart
-		mkswap $swappart
+		mkswap "$swappart"
 		sleep 1
-		swapon $swappart
+		swapon "$swappart"
 	fi
 	echo -e "${BLUE}[+] Enter The Linux Partition: ${NC}"
 	read linuxpart
-	mkfs.ext4 $linuxpart
+	mkfs.ext4 "$linuxpart"
 }
 
 mounting() {
 	# Mounting
-	mount $linuxpart /mnt
-	mount --mkdir $uefipart /mnt/boot/efi
+	mount "$linuxpart" /mnt
+	mount --mkdir "$uefipart" /mnt/boot/efi
 	clear
 	lsblk -p
 	sleep 3
@@ -105,15 +104,18 @@ locale() {
 	echo -e "${BLUE}Seting Up the Locale${NC}"
 	ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
 	arch-chroot /mnt hwclock --systohc
-	echo 'pt_BR.UTF-8 UTF-8' >>/mnt/etc/locale.gen
+  LOCALE_GEN=$(grep '[A-Za-z]\.UTF-8' /usr/share/i18n/SUPPORTED | fzf --header="Choose a Locale" || exit 1)
+	echo "$LOCALE_GEN" >>/mnt/etc/locale.gen
 	arch-chroot /mnt locale-gen
-	echo 'LANG=pt_BR.UTF-8' >>/mnt/etc/locale.conf
+	$SEPARATOR
+  LOCALE_CONF=$(echo "$LOCALE_GEN" | awk -F ' ' '{ print $1 }')
+	echo "LANG=$LOCALE_CONF" >>/mnt/etc/locale.conf
 	echo "KEYMAP=$kb_layout" >>/mnt/etc/vconsole.conf
 	echo "$kb_layout is set in /mnt/etc/vconsole.conf"
 	sleep 1
 	echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
 	read host
-	echo $host >>/mnt/etc/hostname
+	echo "$host" >>/mnt/etc/hostname
 	echo "$host is set as the hostname of the computer"
 	sleep 1
 	clear
@@ -140,9 +142,9 @@ users() {
 	echo -e "${BLUE}Create User${NC}"
 	echo -e "${BLUE}[+] User Name: ${NC}"
 	read username
-	arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
+	arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish "$username"
 	echo -e "${BLUE}$username Password${NC}"
-	arch-chroot /mnt passwd $username
+	arch-chroot /mnt passwd "$username"
 	echo 'permit keepenv persist :wheel' >>/mnt/etc/doas.conf
 	clear
 }
