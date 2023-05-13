@@ -221,7 +221,7 @@ add_user() {
 			i=$answer_users
 
 			until [ "$i" -eq 0 ]; do
-				echo i: "$i"
+				echo "Users to be added: $i"
 				echo -e "${BLUE}Create User${NC}"
 				echo -e "${BLUE}[+] User Name: ${NC}"
 				read username
