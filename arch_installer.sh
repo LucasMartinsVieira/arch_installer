@@ -10,7 +10,6 @@ ENABLED_SYSTEMD="NetworkManager libvirtd sshd bluetooth"
 SEPARATOR="echo"""
 
 # TODO: Option to have a encrypted Installation
-# TODO: Add a fzf prompt to choose localtime
 
 # Intro
 intro() {
@@ -102,7 +101,16 @@ base_pkgs() {
 locale() {
 	# Locale, hwclock, hostname
 	echo -e "${BLUE}Seting Up the Locale${NC}"
-	ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
+  $SEPARATOR
+	# ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
+  LOCALTIME=$(curl -s https://ipapi.co/timezone)
+  read -rp "[+] This is your timezone? $LOCALTIME [y/n]: " answer_timezone
+  if [ "$answer_timezone" = "y" ]; then
+    ln -sf /usr/share/zoneinfo/$LOCALTIME /mnt/etc/localtime
+  else
+    read -rp "[+] Type your timezone: " LOCALTIME_ALT
+    ln -sf /usr/share/zoneinfo/$LOCALTIME_ALT /mnt/etc/localtime
+  fi
 	arch-chroot /mnt hwclock --systohc
   LOCALE_GEN=$(grep '[A-Za-z]\.UTF-8' /usr/share/i18n/SUPPORTED | fzf --header="Choose a Locale" || exit 1)
 	echo "$LOCALE_GEN" >>/mnt/etc/locale.gen
