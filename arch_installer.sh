@@ -10,7 +10,6 @@ ENABLED_SYSTEMD="NetworkManager libvirtd sshd bluetooth"
 SEPARATOR="echo"""
 
 # TODO: Option to have a encrypted Installation
-# TODO: Add a fzf prompt to choose localtime
 
 # Intro
 intro() {
@@ -55,7 +54,7 @@ partitioning() {
 	echo -e "${BLUE}Partioning the Drive${NC}"
 	lsblk -p
 	echo -e "${BLUE}[+] Enter The Drive : ${NC}"
-	read drive
+	read -r drive
 	fdisk "$drive"
 	clear
 }
@@ -65,18 +64,18 @@ formating() {
 	echo -e "${BLUE}Formating Partitions${NC}"
 	lsblk -p
 	echo -e "${BLUE}[+] Enter UEFI Partition: ${NC}"
-	read uefipart
+	read -r uefipart
 	mkfs.fat -F32 "$uefipart"
-	read -p "[+] Did you also create Swap partition? [y/n]: " answer
+	read -rp "[+] Did you also create Swap partition? [y/n]: " answer
 	if [[ $answer == y ]]; then
 		echo -e "${BLUE}[+] Enter the Swap partition: ${NC}"
-		read swappart
+		read -r swappart
 		mkswap "$swappart"
 		sleep 1
 		swapon "$swappart"
 	fi
 	echo -e "${BLUE}[+] Enter The Linux Partition: ${NC}"
-	read linuxpart
+	read -r linuxpart
 	mkfs.ext4 "$linuxpart"
 }
 
@@ -102,7 +101,16 @@ base_pkgs() {
 locale() {
 	# Locale, hwclock, hostname
 	echo -e "${BLUE}Seting Up the Locale${NC}"
-	ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
+  $SEPARATOR
+	# ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
+  LOCALTIME=$(curl -s https://ipapi.co/timezone)
+  read -rp "[+] This is your timezone? $LOCALTIME [y/n]: " answer_timezone
+  if [ "$answer_timezone" = "y" ]; then
+    ln -sf /usr/share/zoneinfo/"$LOCALTIME" /mnt/etc/localtime
+  else
+    read -rp "[+] Type your timezone: " LOCALTIME_ALT
+    ln -sf /usr/share/zoneinfo/"$LOCALTIME_ALT" /mnt/etc/localtime
+  fi
 	arch-chroot /mnt hwclock --systohc
   LOCALE_GEN=$(grep '[A-Za-z]\.UTF-8' /usr/share/i18n/SUPPORTED | fzf --header="Choose a Locale" || exit 1)
 	echo "$LOCALE_GEN" >>/mnt/etc/locale.gen
@@ -114,7 +122,7 @@ locale() {
 	echo "$kb_layout is set in /mnt/etc/vconsole.conf"
 	sleep 1
 	echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
-	read host
+	read -r host
 	echo "$host" >>/mnt/etc/hostname
 	echo "$host is set as the hostname of the computer"
 	sleep 1
@@ -141,7 +149,7 @@ users() {
 	arch-chroot /mnt passwd
 	echo -e "${BLUE}Create User${NC}"
 	echo -e "${BLUE}[+] User Name: ${NC}"
-	read username
+	read -r username
 	arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish "$username"
 	echo -e "${BLUE}$username Password${NC}"
 	arch-chroot /mnt passwd "$username"
@@ -169,7 +177,7 @@ services() {
 
 x11() {
 	"$SEPARATOR"
-	read -p "[+] Do you want to install a display server (xorg)? [y/n]: " answer_x11
+	read -rp "[+] Do you want to install a display server (xorg)? [y/n]: " answer_x11
 	if [[ $answer_x11 == y ]]; then
 		arch-chroot /mnt pacman -Sy xorg xorg-xinit
 
@@ -177,15 +185,15 @@ x11() {
 		arch-chroot /mnt localectl set-keymap "$kb_layout"
 
 		# Xinitrc
-		head -n -5 /mnt/etc/X11/xinit/xinitrc >>/mnt/home/$username/.xinitrc
-		echo "exec awesome" >>/mnt/home/$username/.xinitrc
+		head -n -5 /mnt/etc/X11/xinit/xinitrc >>/mnt/home/"$username"/.xinitrc
+		echo "exec awesome" >>/mnt/home/"$username"/.xinitrc
 		clear
 	fi
 }
 
 aur_helper() {
 	"$SEPARATOR"
-	read -p "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
+	read -rp "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
 	if [[ $answer_paru == y ]]; then
 	  arch-chroot /mnt pacman -Sy --needed --noconfirm lf
 		# Install Paru
@@ -212,11 +220,11 @@ aur_helper() {
 
 add_user() {
 	"$SEPARATOR"
-	read -p "[+] Do you want to add more users to the system? [y/n]: " answer_add_user
+	read -rp "[+] Do you want to add more users to the system? [y/n]: " answer_add_user
 	if [[ $answer_add_user == y ]]; then
 
 		if [ "$(id -u)" -eq 0 ]; then
-			read -p "How many user(s) you wanna add? " answer_users
+			read -rp "How many user(s) you wanna add? " answer_users
 
 			i=$answer_users
 
@@ -224,8 +232,8 @@ add_user() {
 				echo i: $i
 				echo -e "${BLUE}Create User${NC}"
 				echo -e "${BLUE}[+] User Name: ${NC}"
-				read username
-				arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish $username
+				read -r username
+				arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish "$username"
 				echo -e "${BLUE}$username Password${NC}"
 				arch-chroot /mnt passwd $username
 				((--i))
