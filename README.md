@@ -1,8 +1,8 @@
 # Arch Linux Installation Script
 
-![GitHub top language](https://img.shields.io/github/languages/top/lucasmartinsvieira/arch_installer)
-![GitHub last commit](https://img.shields.io/github/last-commit/lucasmartinsvieira/arch_installer)
-![GitHub](https://img.shields.io/github/license/lucasmartinsvieira/arch_installer)
+![GitHub top language](https://img.shields.io/github/languages/top/lucasmartinsvieira/arch_installer?color=green)
+![GitHub last commit](https://img.shields.io/github/last-commit/lucasmartinsvieira/arch_installer?color=green)
+![GitHub](https://img.shields.io/github/license/lucasmartinsvieira/arch_installer?color=green)
 
 This is a simple script to install [Arch Linux](https://archlinux.org/) after you have booted in the live environment of Arch Linux.
 
