@@ -121,7 +121,28 @@ locale() {
   $SEPARATOR
 
   LOCALE_CONF=$(echo "$LOCALE_GEN" | awk -F ' ' '{ print $1 }')
-  echo "LANG=$LOCALE_CONF" >>/mnt/etc/locale.conf
+
+  read -rp "[+] Do you want your system languagem to be english?: [y/n]" answer_english_lang
+
+  if [[ $answer_english_lang == "y" ]]; then
+    echo "LANG=en_US.UTF-8" >>/mnt/etc/locale.conf
+  else
+    echo "LANG=$LOCALE_CONF" >>/mnt/etc/locale.conf
+  fi
+
+  echo
+
+  cat <<EOF >/mnt/etc/locale.conf
+LC_ADDRESS=$LOCALE_CONF" >>/mnt/etc/locale.conf
+LC_MEASUREMENT=$LOCALE_CONF" >>/mnt/etc/locale.conf
+LC_MONETARY=$LOCALE_CONF" >>/mnt/etc/locale.conf
+LC_NAME=$LOCALE_CONF" >>/mnt/etc/locale.conf
+LC_NUMERIC=$LOCALE_CONF" >>/mnt/etc/locale.conf
+LC_PAPER=$LOCALE_CONF" >>/mnt/etc/locale.conf
+LC_TELEFONE=$LOCALE_CONF" >>/mnt/etc/locale.conf
+LC_TIME=$LOCALE_CONF" >>/mnt/etc/locale.conf
+EOF
+
   echo "KEYMAP=$kb_layout" >>/mnt/etc/vconsole.conf
   echo "$kb_layout is set in /mnt/etc/vconsole.conf"
   sleep 1
@@ -175,7 +196,7 @@ services() {
   echo -e "${BLUE}Enabling Services${NC}"
 
   for system in $ENABLED_SYSTEMD; do
-    arch-chroot /mnt systemctl enable $system
+    arch-chroot /mnt systemctl enable "$system"
   done
 }
 
@@ -232,14 +253,14 @@ add_user() {
 
       i=$answer_users
 
-      until [ $i -eq 0 ]; do
-        echo i: $i
+      until [ "$i" -eq 0 ]; do
+        echo i: "$i"
         echo -e "${BLUE}Create User${NC}"
         echo -e "${BLUE}[+] User Name: ${NC}"
         read -r username
         arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish "$username"
         echo -e "${BLUE}$username Password${NC}"
-        arch-chroot /mnt passwd $username
+        arch-chroot /mnt passwd "$username"
         ((--i))
       done
     else
