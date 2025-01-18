@@ -105,22 +105,27 @@ locale() {
   # ln -sf /usr/share/zoneinfo/America/Sao_Paulo /mnt/etc/localtime
   LOCALTIME=$(curl -s https://ipapi.co/timezone)
   read -rp "[+] This is your timezone? $LOCALTIME [y/n]: " answer_timezone
+
   if [ "$answer_timezone" = "y" ]; then
     ln -sf /usr/share/zoneinfo/"$LOCALTIME" /mnt/etc/localtime
   else
     read -rp "[+] Type your timezone: " LOCALTIME_ALT
     ln -sf /usr/share/zoneinfo/"$LOCALTIME_ALT" /mnt/etc/localtime
   fi
+
   arch-chroot /mnt hwclock --systohc
   LOCALE_GEN=$(grep '[A-Za-z]\.UTF-8' /usr/share/i18n/SUPPORTED | fzf --header="Choose a Locale" || exit 1)
   echo "$LOCALE_GEN" >>/mnt/etc/locale.gen
   arch-chroot /mnt locale-gen
+
   $SEPARATOR
+
   LOCALE_CONF=$(echo "$LOCALE_GEN" | awk -F ' ' '{ print $1 }')
   echo "LANG=$LOCALE_CONF" >>/mnt/etc/locale.conf
   echo "KEYMAP=$kb_layout" >>/mnt/etc/vconsole.conf
   echo "$kb_layout is set in /mnt/etc/vconsole.conf"
   sleep 1
+
   echo -e "${BLUE}[+] Enter The Hostname: ${NC}"
   read -r host
   echo "$host" >>/mnt/etc/hostname
