@@ -254,6 +254,21 @@ aur_helper() {
   fi
 }
 
+update_ssh_config() {
+  echo -e "${BLUE}Updating ssh config${NC}"
+  sed -i 's/^#PermitRootLogin .*/PermitRootLogin no/' /mnt/etc/ssh/sshd_config
+  sed -i 's/^#PasswordAuthentication .*/PasswordAuthentication no/' /mnt/etc/ssh/sshd_config
+}
+
+add_env_variables() {
+  cat <<EOF >>/mnt/etc/profile
+WLR_NO_HARDWARE_CURSORS = 1 
+WLR_RENDERER = "vulkan" 
+QT_QPA_PLATFORM = "wayland;xcb"
+KITTY_ENABLE_WAYLAND = "1"
+EOF
+}
+
 add_user() {
   "$SEPARATOR"
   read -rp "[+] Do you want to add more users to the system? [y/n]: " answer_add_user
@@ -301,6 +316,8 @@ grub_uefi
 services
 x11
 aur_helper
+update_ssh_config
+add_env_variables
 add_user
 finish
 reboot
