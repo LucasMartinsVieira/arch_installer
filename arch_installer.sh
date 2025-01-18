@@ -187,7 +187,7 @@ users() {
   echo -e "${BLUE}Create User${NC}"
   echo -e "${BLUE}[+] User Name: ${NC}"
   read -r username
-  arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt -s /bin/fish "$username"
+  arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage,libvirt,docker -s /bin/fish "$username"
   echo -e "${BLUE}$username Password${NC}"
   arch-chroot /mnt passwd "$username"
   echo 'permit keepenv persist :wheel' >>/mnt/etc/doas.conf
