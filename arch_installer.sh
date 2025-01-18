@@ -132,7 +132,7 @@ locale() {
 
   echo
 
-  cat <<EOF >/mnt/etc/locale.conf
+  cat <<EOF >>/mnt/etc/locale.conf
 LC_ADDRESS=$LOCALE_CONF" >>/mnt/etc/locale.conf
 LC_MEASUREMENT=$LOCALE_CONF" >>/mnt/etc/locale.conf
 LC_MONETARY=$LOCALE_CONF" >>/mnt/etc/locale.conf
