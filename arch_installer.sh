@@ -231,7 +231,7 @@ aur_helper() {
   "$SEPARATOR"
   read -rp "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
   if [[ $answer_paru == y ]]; then
-    arch-chroot /mnt pacman -Sy --needed --noconfirm lf
+    arch-chroot /mnt pacman -Sy --needed --noconfirm yazi
     # Install Paru
     echo -e "${GREEN}Installing Aur Helper Paru${NC}"
     arch-chroot -u "$username" /mnt sh -c "
@@ -246,7 +246,7 @@ aur_helper() {
     # Paru.conf
     sed -i 's/\#\[bin\]/\[bin\]/' /mnt/etc/paru.conf
     sed -i "s|#Sudo = doas|Sudo = /bin/doas|" /mnt/etc/paru.conf
-    sed -i "s|#FileManager = vifm|FileManager = lf|" /mnt/etc/paru.conf
+    sed -i "s|#FileManager = vifm|FileManager = yazi|" /mnt/etc/paru.conf
     sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
     sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
     sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
