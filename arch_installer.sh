@@ -76,7 +76,18 @@ formating() {
   fi
   echo -e "${BLUE}[+] Enter The Linux Partition: ${NC}"
   read -r linuxpart
-  mkfs.ext4 "$linuxpart"
+
+  FS_CHOICE=$(printf "Ext4\nBtrfs" | fzf --header "Which File System do you want for your root partition?" || exit 1)
+
+  if [[ "$FS_CHOICE" == "Ext4" ]]; then
+    mkfs.ext4 "$linuxpart"
+  elif [[ "$FS_CHOICE" == "Btrfs" ]]; then
+    mkfs.btrfs "$linuxpart"
+  else
+    echo -e "${RED}You need to choose between Ext4 and Btrfs${NC}"
+    exit 1
+  fi
+
 }
 
 mounting() {
