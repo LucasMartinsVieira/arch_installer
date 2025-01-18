@@ -144,14 +144,14 @@ locale() {
   echo
 
   cat <<EOF >>/mnt/etc/locale.conf
-LC_ADDRESS=$LOCALE_CONF" >>/mnt/etc/locale.conf
-LC_MEASUREMENT=$LOCALE_CONF" >>/mnt/etc/locale.conf
-LC_MONETARY=$LOCALE_CONF" >>/mnt/etc/locale.conf
-LC_NAME=$LOCALE_CONF" >>/mnt/etc/locale.conf
-LC_NUMERIC=$LOCALE_CONF" >>/mnt/etc/locale.conf
-LC_PAPER=$LOCALE_CONF" >>/mnt/etc/locale.conf
-LC_TELEFONE=$LOCALE_CONF" >>/mnt/etc/locale.conf
-LC_TIME=$LOCALE_CONF" >>/mnt/etc/locale.conf
+LC_ADDRESS=$LOCALE_CONF"
+LC_MEASUREMENT=$LOCALE_CONF"
+LC_MONETARY=$LOCALE_CONF"
+LC_NAME=$LOCALE_CONF"
+LC_NUMERIC=$LOCALE_CONF"
+LC_PAPER=$LOCALE_CONF"
+LC_TELEFONE=$LOCALE_CONF"
+LC_TIME=$LOCALE_CONF"
 EOF
 
   echo "KEYMAP=$kb_layout" >>/mnt/etc/vconsole.conf
