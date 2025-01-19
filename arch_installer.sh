@@ -227,7 +227,7 @@ x11() {
   fi
 }
 
-aur_helper() {
+aur() {
   "$SEPARATOR"
   read -rp "[+] Do you want to install a aur helper (paru)? [y/n]: " answer_paru
   if [[ $answer_paru == y ]]; then
@@ -250,8 +250,35 @@ aur_helper() {
     sed -i 's/\#BottomUp/BottomUp/' /mnt/etc/paru.conf
     sed -i "s/#RemoveMake/RemoveMake/" /mnt/etc/paru.conf
     sed -i "s/#CleanAfter/CleanAfter/" /mnt/etc/paru.conf
-    echo -e "${GREEN}Installation Finished${NC}"
+    echo -e "${GREEN}Installation of Paru Finished${NC}"
   fi
+
+  while true; do
+    read -rp "[+] Do you want to enable the Chaotic AUR? [y/N]: " answer_chaotic
+    case "$answer_chaotic" in
+    [Yy]*)
+      arch-chroot -u "$username" /mnt sh -c '
+      pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+      pacman-key --lsign-key 3056513887B78AEB
+      pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+      pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+      echo "[chaotic-aur]" >> /mnt/etc/pacman.conf
+      echo "Include = /etc/pacman.d/chaotic-mirrorlist" >> /mnt/etc/pacman.conf
+      pacman -Syu
+      '
+      echo -e "${GREEN}Chaotic AUR enabled${NC}"
+      break
+      ;;
+    [Nn]*)
+      echo -e "${BLUE}You choose not to enable the Chaotic Aur${NC}"
+      break
+      ;;
+    *)
+      echo -e "${BLUE}You choose not to enable the Chaotic Aur${NC}"
+      command ...
+      ;;
+    esac
+  done
 }
 
 update_ssh_config() {
@@ -315,7 +342,7 @@ users
 grub_uefi
 services
 x11
-aur_helper
+aur
 update_ssh_config
 add_env_variables
 add_user
